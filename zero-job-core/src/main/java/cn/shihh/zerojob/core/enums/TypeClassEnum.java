@@ -6,6 +6,12 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.AllArgsConstructor;
 
+/**
+ * 参数类型枚举
+ * 参照JSON Schema的类型定义，包括字符串、整数、数字、布尔、数组、对象等类型
+ * @author shihh
+ * @since 2024/9/22
+ */
 @AllArgsConstructor
 public enum TypeClassEnum implements TypeConverter {
     STRING("string", "标准字符串类型") {
