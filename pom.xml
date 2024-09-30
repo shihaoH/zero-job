@@ -11,6 +11,7 @@
     <description>pom</description>
     <modules>
         <module>zero-job-core</module>
+        <module>zero-job-spring-boot-starter</module>
     </modules>
 
     <properties>

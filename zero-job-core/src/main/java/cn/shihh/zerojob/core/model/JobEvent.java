@@ -1,7 +1,19 @@
 package cn.shihh.zerojob.core.model;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.shihh.zerojob.core.enums.JobStatus;
+import cn.shihh.zerojob.core.enums.JobTypeEnum;
 import cn.shihh.zerojob.core.enums.TypeClassEnum;
+import cn.shihh.zerojob.core.util.CronExpression;
 import lombok.Data;
+import lombok.SneakyThrows;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 任务事件
@@ -28,14 +40,9 @@ public class JobEvent {
     private String eventKey;
 
     /**
-     * 是否立即执行
-     */
-    private Boolean isImmediately;
-
-    /**
      * 执行时间cron表达式，非立即执行情况下有效
      */
-    private String cronExpression;
+    private String cron;
 
     /**
      * 任务参数
@@ -50,7 +57,7 @@ public class JobEvent {
     /**
      * 任务类型
      */
-    private TypeClassEnum jobType;
+    private JobTypeEnum jobType;
 
     /**
      * 任务次数
@@ -61,4 +68,81 @@ public class JobEvent {
      * 已执行次数
      */
     private Integer executedCount;
+
+    /**
+     * 开始时间
+     */
+    private Date startTime;
+
+    /**
+     * 结束时间
+     */
+    private Date endTime;
+
+    /**
+     * 任务执行者
+     */
+    private String jobExecutor;
+
+    /**
+     * 任务执行目标
+     * 例如：http: https://target-service/targeturi
+     *      脚本： /path/to/script.sh
+     *      event: eventKey
+     */
+    private String jobExecuteTarget;
+
+    @SneakyThrows
+    public List<Date> getExecuteTimes(Date executeStartTime) {
+        DateTime nextTime = DateUtil.date(executeStartTime);
+        DateTime executeEndTime = DateUtil.endOfDay(executeStartTime);
+        List<Date> nextDayExecuteTimes = new ArrayList<>();
+        CronExpression cronExpression = new CronExpression(this.getCron());
+        nextTime = DateUtil.date(cronExpression.getNextValidTimeAfter(nextTime));
+        while (nextTime.isAfterOrEquals(getStartTime()) &&
+                nextTime.isBeforeOrEquals(getEndTime()) &&
+                nextTime.isBeforeOrEquals(executeEndTime)) {
+            nextDayExecuteTimes.add(nextTime);
+            nextTime = DateUtil.date(cronExpression.getNextValidTimeAfter(nextTime));
+        }
+
+        return nextDayExecuteTimes;
+    }
+
+    public List<Job> getSchedulerJobs(Date executeStartTime) {
+        List<Date> nextDayExecuteTimes = getExecuteTimes(executeStartTime);
+        if (ObjectUtil.isEmpty(nextDayExecuteTimes)) {
+            return Collections.emptyList();
+        }
+        List<Job> jobs = new ArrayList<>();
+        for (Date executeTime : nextDayExecuteTimes) {
+            Job job = new Job();
+            job.setJobKey(getEventId() + "-" + executeTime.getTime());
+            job.setJobName(getEventName() + "-" + executeTime.getTime());
+            job.setJobGroup(getEventId());
+            job.setJobExecuteTime(executeTime);
+            job.setJobExecutor(getJobExecutor());
+            job.setJobExecuteTarget(getJobExecuteTarget());
+            job.setJobParams(getJobParams());
+            job.setJobParamsType(getJobParamsType());
+            job.setJobStatus(JobStatus.RUNNING);
+            jobs.add(job);
+        }
+        return jobs;
+    }
+
+    public Job getJob() {
+        Job job = new Job();
+        long executeTime = ObjectUtil.defaultIfNull(getStartTime(), DateUtil.date()).getTime();
+        job.setJobKey(getEventId() + "-" + executeTime);
+        job.setJobName(getEventName());
+        job.setJobGroup(getEventId());
+        job.setJobExecutor(getJobExecutor());
+        job.setJobExecuteTarget(getJobExecuteTarget());
+        job.setJobParams(getJobParams());
+        job.setJobParamsType(getJobParamsType());
+        job.setJobExecuteTime(getStartTime());
+        job.setJobStatus(JobStatus.RUNNING);
+        return job;
+    }
 }

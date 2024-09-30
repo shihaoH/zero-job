@@ -35,6 +35,19 @@ public class Job {
     private Date jobExecuteTime;
 
     /**
+     * 任务执行者
+     */
+    private String jobExecutor;
+
+    /**
+     * 任务执行目标
+     * 例如：http: https://target-service/targeturi
+     *      脚本： /path/to/script.sh
+     *      event: eventKey
+     */
+    private String jobExecuteTarget;
+
+    /**
      * 任务执行参数
      */
     private String jobParams;
