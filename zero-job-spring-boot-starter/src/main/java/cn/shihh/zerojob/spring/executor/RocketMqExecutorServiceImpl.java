@@ -1,5 +1,6 @@
 package cn.shihh.zerojob.spring.executor;
 
+import cn.shihh.zerojob.core.enums.JobStatus;
 import cn.shihh.zerojob.core.model.Job;
 import cn.shihh.zerojob.core.service.ExecutorService;
 import com.alibaba.fastjson.JSONObject;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
  * @author shihh
  * @since 2024/9/26
  */
-@Service
+@Service("rocketMqExecutor")
 @RequiredArgsConstructor
 @Slf4j
 public class RocketMqExecutorServiceImpl implements ExecutorService {
@@ -25,10 +26,16 @@ public class RocketMqExecutorServiceImpl implements ExecutorService {
         String mqDestination = job.getJobExecuteTarget();
         String jobParams = job.getJobParams();
         Object o = job.getJobParamsType().converter(jobParams);
-        SendResult sendResult = template.syncSend(mqDestination, o);
+        try {
+            SendResult sendResult = template.syncSend(mqDestination, o);
 
-        // 此处为了方便查看给日志转了json，根据选择选择日志记录方式，例如ELK采集
-        log.info("[{}]同步消息[{}]发送结果[{}]", mqDestination, o, JSONObject.toJSON(sendResult));
+            log.info("[{}]同步消息[{}]发送结果[{}]", mqDestination, o, JSONObject.toJSON(sendResult));
+
+            job.setJobStatus(JobStatus.SUCCEED);
+        } catch (Exception e) {
+            job.setJobStatus(JobStatus.FAILED);
+            log.error("[{}]同步消息[{}]发送失败", mqDestination, o, e);
+        }
         return true;
     }
 }

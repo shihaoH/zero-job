@@ -1,0 +1,28 @@
+### 发起Cron任务事件
+POST http://127.0.0.1:8080/api/zero-job/event
+Content-Type: application/json
+{
+    "eventName": "测试CRON事件",
+    "eventKey": "testCronEvent",
+    "jobParams": "testJobParams",
+    "jobParamsType": "STRING",
+    "jobType": "SCHEDULED",
+    "jobExecutorType": "ROCKETMQ",
+    "jobExecuteTarget": "target-topic:signing",
+    "cron": "0 * * * * ?",
+    "endTime": "2024-10-11 00:03:00",
+    "startTime": "2024-10-11 00:00:00"
+}
+
+### 发起单次任务事件
+POST http://127.0.0.1:8080/api/zero-job/event
+Content-Type: application/json
+{
+    "eventName": "测试单次任务事件",
+    "eventKey": "testOneTimeEvent",
+    "jobParams": "{\"name\":\"张三\", \"approval\": true, \"remark\":\"测试单次任务\"}",
+    "jobParamsType": "STRING",
+    "jobType": "ONE_TIME",
+    "jobExecutorType": "HTTP",
+    "jobExecuteTarget": "http://127.0.0.1:8081/jobTestApi",
+}

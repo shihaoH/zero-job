@@ -12,6 +12,7 @@
     <modules>
         <module>zero-job-core</module>
         <module>zero-job-spring-boot-starter</module>
+        <module>zero-job-spring-boot-web</module>
     </modules>
 
     <properties>

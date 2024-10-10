@@ -1,4 +1,4 @@
-package cn.shihh.zerojob.core.model;
+package cn.shihh.zerojob.pojo;
 
 import cn.shihh.zerojob.core.enums.JobStatus;
 import cn.shihh.zerojob.core.enums.TypeClassEnum;
@@ -12,7 +12,7 @@ import java.util.Date;
  * @since  2024/9/22
  */
 @Data
-public class Job {
+public class JobVO {
 
     /**
      * 任务唯一标识
@@ -23,11 +23,6 @@ public class Job {
      * 任务名称
      */
     private String jobName;
-
-    /**
-     * 任务分组/批次，用于标识任务的业务范围，可以用eventId标识
-     */
-    private String jobGroup;
 
     /**
      * 任务执行时间
@@ -61,10 +56,5 @@ public class Job {
      * 任务状态
      */
     private JobStatus jobStatus;
-
-    /**
-     * 任务创建时间
-     */
-    private Date createTime;
 
 }

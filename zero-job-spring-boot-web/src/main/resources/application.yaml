@@ -1,0 +1,23 @@
+
+spring:
+  application:
+    name: zero-job
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DB:zero_job}?characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+
+
+rocketmq:
+  name-server: ${ROCKETMQ_NAMESRV}
+  producer:
+    group: ${ROCKETMQ_PRODUCER_GROUP:zero-job-wheel-group}
+    access-key: ${ROCKETMQ_ACCESS_KEY:}
+    secret-key: ${ROCKETMQ_SECRET_KEY:}
+  consumer:
+    group: ${ROCKETMQ_CONSUMER_GROUP:zero-job-wheel-group}
+    access-key: ${ROCKETMQ_ACCESS_KEY:}
+    secret-key: ${ROCKETMQ_SECRET_KEY:}
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml

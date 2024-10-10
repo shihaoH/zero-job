@@ -3,6 +3,7 @@ package cn.shihh.zerojob.core.model;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.shihh.zerojob.core.enums.EventStatus;
 import cn.shihh.zerojob.core.enums.JobStatus;
 import cn.shihh.zerojob.core.enums.JobTypeEnum;
 import cn.shihh.zerojob.core.enums.TypeClassEnum;
@@ -92,6 +93,16 @@ public class JobEvent {
      */
     private String jobExecuteTarget;
 
+    /**
+     * 任务创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 事件状态
+     */
+    private EventStatus eventStatus;
+
     @SneakyThrows
     public List<Date> getExecuteTimes(Date executeStartTime) {
         DateTime nextTime = DateUtil.date(executeStartTime);
@@ -99,8 +110,8 @@ public class JobEvent {
         List<Date> nextDayExecuteTimes = new ArrayList<>();
         CronExpression cronExpression = new CronExpression(this.getCron());
         nextTime = DateUtil.date(cronExpression.getNextValidTimeAfter(nextTime));
-        while (nextTime.isAfterOrEquals(getStartTime()) &&
-                nextTime.isBeforeOrEquals(getEndTime()) &&
+        while ((ObjectUtil.isNull(getStartTime()) || nextTime.isAfterOrEquals(getStartTime())) &&
+                (ObjectUtil.isNull(getEndTime()) || nextTime.isBeforeOrEquals(getEndTime())) &&
                 nextTime.isBeforeOrEquals(executeEndTime)) {
             nextDayExecuteTimes.add(nextTime);
             nextTime = DateUtil.date(cronExpression.getNextValidTimeAfter(nextTime));

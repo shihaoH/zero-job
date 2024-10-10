@@ -1,8 +1,10 @@
 package cn.shihh.zerojob.core.service;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.shihh.zerojob.core.model.Job;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 时间轮抽象服务接口
@@ -36,7 +38,9 @@ public interface JobService {
      */
     default void executeJob(String jobKey) {
         Job job = getJob(jobKey);
-        executeJob(job);
+        if (ObjectUtil.isNotNull(job)) {
+            executeJob(job);
+        }
     }
 
     /**
@@ -46,16 +50,23 @@ public interface JobService {
     void executeJob(Job job);
 
     /**
+     * 获取任务组中的所有任务
+     * @param jobGroup 任务组
+     * @return 任务组中的所有任务
+     */
+    List<Job> listByJobGroup(String jobGroup);
+
+    /**
      * 删除任务
      * @param jobKey 任务key
      */
-    void deleteJob(String jobKey);
+    Boolean deleteJob(String jobKey);
 
     /**
      * 删除任务组中的所有任务
      * @param jobGroup 任务组
      */
-    void deleteJobByGroup(String jobGroup);
+    Boolean deleteJobByGroup(String jobGroup);
 
     /**
      * 获取时间轮服务

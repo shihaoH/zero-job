@@ -5,7 +5,7 @@
     <select id="getNextDayEvent" resultType="cn.shihh.zerojob.core.model.JobEvent">
         select *
         from job_event
-        where (start_time is null or start_time &lt;= #{tomorrow})
+        where event_status = 'RUNNING' and(start_time is null or start_time &lt;= #{tomorrow})
             and (end_time is null or date(end_time) &gt;= date(#{tomorrow}))
         and (job_count > executed_count or job_count = -1)
     </select>
