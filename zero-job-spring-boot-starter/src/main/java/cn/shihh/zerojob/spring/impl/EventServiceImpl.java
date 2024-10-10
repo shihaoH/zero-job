@@ -41,7 +41,9 @@ public class EventServiceImpl implements EventService {
         }
         jobEvent.setEventId(IdWorker.get32UUID());
         eventMapper.insert(jobEvent);
-        if (ObjectUtil.isNull(jobEvent.getStartTime()) || DateUtil.date().isAfterOrEquals(jobEvent.getStartTime())) {
+        // 如果没设置开始时间，即可立即发布任务
+        // 如果开始时间在今天以内，也可以生成当天任务
+        if (ObjectUtil.isNull(jobEvent.getStartTime()) || DateUtil.endOfDay(DateUtil.date()).isAfterOrEquals(jobEvent.getStartTime())) {
             this.publishJobByEvent(jobEvent, DateUtil.date());
         }
     }

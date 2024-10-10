@@ -47,7 +47,13 @@ public class RocketMQWheelServiceImpl implements WheelService, RocketMQListener<
             log.info("[{}]将任务[{}]放入MQ时间轮，延迟[{}]ms", destination, job.getJobKey(), jobExecuteDelayMs);
         }
         Message<String> sendMessage = MessageBuilder.withPayload(job.getJobKey()).setHeader(RocketMQHeaders.KEYS, job.getJobKey()).build();
-        SendResult sendResult = rocketMQTemplate.syncSendDelayTimeMills(destination, sendMessage, jobExecuteDelayMs);
+        SendResult sendResult;
+        // 延迟时间差如果为负数，即立即执行
+        if (jobExecuteDelayMs > 0L) {
+            sendResult = rocketMQTemplate.syncSendDelayTimeMills(destination, sendMessage, jobExecuteDelayMs);
+        } else {
+            sendResult = rocketMQTemplate.syncSend(destination, sendMessage);
+        }
         log.info("[{}]同步消息[{}]发送结果[{}]", destination, job.getJobKey(), JSONObject.toJSON(sendResult));
     }
 

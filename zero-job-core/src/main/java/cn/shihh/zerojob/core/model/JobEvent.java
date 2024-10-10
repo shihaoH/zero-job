@@ -105,8 +105,15 @@ public class JobEvent {
 
     @SneakyThrows
     public List<Date> getExecuteTimes(Date executeStartTime) {
-        DateTime nextTime = DateUtil.date(executeStartTime);
         DateTime executeEndTime = DateUtil.endOfDay(executeStartTime);
+        if (ObjectUtil.equal(getJobType(), JobTypeEnum.ONE_TIME)) {
+            if (ObjectUtil.isNull(getStartTime()) || executeEndTime.isAfterOrEquals(getStartTime())) {
+                return Collections.singletonList(getStartTime());
+            } else {
+                return Collections.emptyList();
+            }
+        }
+        DateTime nextTime = DateUtil.date(executeStartTime);
         List<Date> nextDayExecuteTimes = new ArrayList<>();
         CronExpression cronExpression = new CronExpression(this.getCron());
         nextTime = DateUtil.date(cronExpression.getNextValidTimeAfter(nextTime));

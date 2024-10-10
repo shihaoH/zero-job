@@ -1,6 +1,7 @@
 package cn.shihh.zerojob.spring.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.shihh.zerojob.core.enums.JobStatus;
 import cn.shihh.zerojob.core.enums.JobTypeEnum;
@@ -51,7 +52,8 @@ public class JobServiceImpl implements JobService {
         job.setJobKey(IdWorker.get32UUID());
         jobMapper.insert(job);
         Date jobExecuteTime = job.getJobExecuteTime();
-        if (jobExecuteTime == null) {
+        // 如果执行时间早于当前时间，则立即执行
+        if (jobExecuteTime == null || DateUtil.date().isAfterOrEquals(jobExecuteTime)) {
             executeJob(job);
         } else {
             loadJobToWheel(job);

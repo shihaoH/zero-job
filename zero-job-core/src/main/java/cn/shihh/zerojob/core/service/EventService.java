@@ -1,7 +1,5 @@
 package cn.shihh.zerojob.core.service;
 
-import cn.hutool.core.util.ObjectUtil;
-import cn.shihh.zerojob.core.enums.JobTypeEnum;
 import cn.shihh.zerojob.core.model.JobEvent;
 
 import java.util.Date;
@@ -38,12 +36,7 @@ public interface EventService {
      * @param jobEvent 任务事件
      */
     default void publishJobByEvent(JobEvent jobEvent, Date jobStartTime) {
-        JobTypeEnum jobType = jobEvent.getJobType();
-        if (ObjectUtil.equal(jobType, JobTypeEnum.ONE_TIME)) {
-            getJobService().saveJob(jobEvent.getJob());
-        } else {
-            getJobService().scheduleJob(jobEvent.getSchedulerJobs(jobStartTime));
-        }
+        getJobService().scheduleJob(jobEvent.getSchedulerJobs(jobStartTime));
     }
 
     /**
