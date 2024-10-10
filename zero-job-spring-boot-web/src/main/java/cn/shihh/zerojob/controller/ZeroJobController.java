@@ -1,8 +1,6 @@
 package cn.shihh.zerojob.controller;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.shihh.zerojob.core.model.Job;
 import cn.shihh.zerojob.core.model.JobEvent;
 import cn.shihh.zerojob.core.service.EventService;
@@ -43,9 +41,6 @@ public class ZeroJobController {
     public Boolean sendJobEvent(@RequestBody JobEventParam param) {
         JobEvent jobEvent = BeanUtil.toBean(param, JobEvent.class);
         jobEvent.setJobExecutor(param.getJobExecutorType().getName());
-        if (ObjectUtil.isNull(jobEvent.getStartTime())) {
-            jobEvent.setStartTime(DateUtil.date());
-        }
         eventService.saveJobEvent(jobEvent);
         return true;
     }

@@ -1,6 +1,7 @@
 ### 发起Cron任务事件
 POST http://127.0.0.1:8080/api/zero-job/event
 Content-Type: application/json
+
 {
     "eventName": "测试CRON事件",
     "eventKey": "testCronEvent",
@@ -17,6 +18,7 @@ Content-Type: application/json
 ### 发起单次任务事件
 POST http://127.0.0.1:8080/api/zero-job/event
 Content-Type: application/json
+
 {
     "eventName": "测试单次任务事件",
     "eventKey": "testOneTimeEvent",
@@ -24,5 +26,5 @@ Content-Type: application/json
     "jobParamsType": "STRING",
     "jobType": "ONE_TIME",
     "jobExecutorType": "HTTP",
-    "jobExecuteTarget": "http://127.0.0.1:8081/jobTestApi",
+    "jobExecuteTarget": "http://127.0.0.1:8081/jobTestApi"
 }
